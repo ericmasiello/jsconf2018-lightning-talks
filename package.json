@@ -1,0 +1,16 @@
+{
+  "name": "jsconf2018-lightning-talks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "mdx-deck deck.mdx",
+    "build": "mdx-deck build deck.mdx"
+  },
+  "keywords": [],
+  "author": "Eric Masiello <eric.j.masiello@gmail.com> (http://synbydesign.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "mdx-deck": "^1.7.3"
+  }
+}

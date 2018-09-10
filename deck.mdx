@@ -1,0 +1,261 @@
+export { light as theme } from 'mdx-deck/themes'
+
+
+# [Data Driven CSS](https://2018.jsconf.us/speakers/miriam-suzanne/)
+## By Miriam Suzanne
+
+---
+
+## CSS History
+* 2007 - 2010: Major Grid CSS Frameworks e.g. Blueprint, oocss, 960gs
+* 2008: CSS Systems Natlie Downe talk proposing move away from frameworks; 
+
+```css
+.grid-span {
+  width: 23.7288136%;
+  margin-right: 01.6949153%;
+  padding-left: 08.4745763%;
+}
+```
+
+```notes
+* Use systems like BEM or OOCSS
+* Use fluid grids with static (px) and elastic (em) containers
+* One downside to this is that ems require ugly math
+```
+
+---
+## CSS History
+  
+* 2009: Compass + Sass (and Susy)
+
+```scss
+.grid-span {
+  width: span(3);
+  margin-right: gutter();
+  padding-left: span(1 wide);
+}
+```
+
+---
+## CSS History
+
+* 2009: Media queries
+* 2011: We get `calc`
+* 2011: Ethan Marcotte presents "Response Web Design"
+
+```notes
+Susy: built on Compass + Sass to make more human readable grids
+```
+
+---
+## CSS History
+
+* 2014: CSS variables `var(--property-name, fallback)`
+
+```notes
+based on -<empty>-browser-prefix
+Similar to sass variables...not in fact quite different
+```
+
+---
+
+### Sass Variables Scope
+
+```scss
+.example { $columns: 2; }
+.nested-class { /* $columns == undefined */ }
+
+@media (min-width: 30em) {
+  .example { $columns: 6; }
+  .nested-class { /* $columns == undefined */ }
+}
+```
+
+---
+
+### CSS Variables _Inherit_
+
+```css
+.example { --columns: 2; }
+.nested-class { /* var(--columns) == 2 */ }
+
+@media (min-width: 30em) {
+  .example { --columns: 6; }
+  .nested-class { /* var(--columns) == 6 */ }
+}
+```
+
+---
+
+### CSS Variables Applied Inline
+
+```html
+<button style="--color: blue;"></button>
+```
+
+```css
+button {
+  background: var(--color, red);
+}
+```
+
+---
+
+### Avoiding CSS Specificity Pitfalls
+
+```css
+button {
+  background: blue
+}
+
+.thing button {
+  background: red;
+}
+
+/* vs */
+
+button {
+  background: var(--btn-color, blue);
+}
+
+.thing {
+  --btn-color: red;
+}
+```
+
+```notes
+She then goes on to demonstrate how she recreates Susy using CSS variables 
+but in a very hacky way
+```
+
+---
+
+### Modifying CSS Variables with JS
+
+```js
+// get
+let currentColor = footer.style.getPropertyValue('--color');
+
+// set
+footer.style.setProperty('--color', newColor);
+```
+---
+## CSS History
+
+* 2017: CSS Grid drops in every major browser
+
+```notes
+Firefox 52 & Chrome 57 & Safari 10
+This is the first time CSS has ever been able to control both columns and rows
+Then talks a lot about CSS Grid syntax
+```
+
+---
+
+## Declarative Syntax != Static Results
+
+---
+### Dynamic Layouts with Grids and CSS Variables
+
+```html
+<dl class="chart" style="--scale: 100">
+  <dt class="date">2000</dt>
+  <dd class="bar" style="--value: 45">45%</dd>
+  <dt class="date">2001</dt>
+  <dd class="bar" style="--value: 100">100%</dd>
+  <!-- etc… -->
+</dl>
+```
+```css
+.bar {
+  --start: calc(var(--scale) + 1 - var(--value));
+  grid-row-start: var(--start);
+}
+```
+---
+
+### Dynamic Layouts with Grids and CSS Variables
+http://talks.oddbird.net/demos/css-chart/
+
+
+
+---
+
+# [How to be an a11y - Creating Accessible React Apps](https://2018.jsconf.us/speakers/neha-nivedita/)
+## By Neha Nivedita
+
+---
+
+## What is accessibility
+* Everyone can access services or products equally
+* Usability regarless of disability
+* Web accessiblity is related to web, services, products and apps
+
+---
+## ARIA: accessible rich internet applications
+Features baked into HTML
+
+```html
+<button aria-label="Close Window">X</button>
+```
+
+---
+## Why accessibility
+
+* 15% of population has some form of disability - thats 1 billion people
+* 8% of population has some form of colorblindness
+* AX isn't a feature, its a necessicity
+* Ignoring AX is akin to discrimination
+
+---
+## a11y issues with JS frameworks
+
+* devs often write non-semantic HTML
+* screen readers cannot parse the content meaningfully
+* apps become inaccessible
+
+```jsx
+<div onClick={this.onClick} className={looklikeAButton}>
+  click me
+</div>
+```
+
+---
+## React and a11y
+* React supports aria natively
+
+
+---
+
+How to make React apps accessible
+	* Get low hanging fruit out of the way first
+	* Use `alt` for images
+	* Do not make a button out of something isn't a button
+	* Write semantic html
+	* Setting page titles
+		* in a SPA, the page may update, visit a different route but often times the page title remains the same
+		* Page title is the thing screen readers usually read out loud
+		* ```document.title = 'Page title';```
+		* Or use `react-helmet`
+	* Header semantics
+		* Use heading tags `h1` etc the way they are intended to, not just to make the text big.
+	* Unique IDs - useful for setting focus or label/input association
+	* React Fragments
+		* Used to group a list of elements without creating wrapper elements
+	* Change announcments
+		* when something changes we need users to be aware of it
+		* use `aria-live` attribute
+		* `aria-live` whenever the underlying content changes, it announces the change
+
+		```js
+		<div aria-live="polite" aria-atomic="true" className="">
+			{this.props.message}
+		</div>
+		```
+		* see `react-aria-live`, `react-a11y-announcer`, or use React Portals
+	* Managing focus
+		* When a page loads, we want to set some element focus - 
+		* When react router changes, the change is silent ... no good
+		* Use `ref`s to set focus and set `tabIndex="-1"`
+	* let buttons be buttons - use semantic html. use anchor tags for links, buttons for buttons, headers for headers, etc.
